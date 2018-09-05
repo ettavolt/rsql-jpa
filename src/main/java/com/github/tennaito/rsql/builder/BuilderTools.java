@@ -44,40 +44,40 @@ public interface BuilderTools {
 	 *
 	 * @return Mapper
 	 */
-	public Mapper getPropertiesMapper();
+	Mapper getPropertiesMapper();
 
 	/**
 	 * Set a specific Mapper.
 	 *
 	 * @param mapper Mapper
 	 */
-	public void setPropertiesMapper(Mapper mapper);
+	void setPropertiesMapper(Mapper mapper);
 
 	/**
 	 * Get a argument parser for casting types.
 	 *
 	 * @return ArgumentParser
 	 */
-	public ArgumentParser getArgumentParser();
+	ArgumentParser getArgumentParser();
 
 	/**
 	 * Set a specific ArgumentParser.
 	 *
 	 * @param argumentParser ArgumentParser
 	 */
-	public void setArgumentParser(ArgumentParser argumentParser);
+	void setArgumentParser(ArgumentParser argumentParser);
 
 	/**
 	 * Get a predicate strategy for parsing Node into Predicate.
 	 *
 	 * @return PredicateBuilderStrategy
 	 */
-	public PredicateBuilderStrategy getPredicateBuilder();
+	PredicateBuilderStrategy getPredicateBuilder();
 
 	/**
 	 * Set a specific predicate strategy.
 	 *
 	 * @param predicateStrategy PredicateBuilderStrategy
 	 */
-	public void setPredicateBuilder(PredicateBuilderStrategy predicateStrategy);
+	void setPredicateBuilder(PredicateBuilderStrategy predicateStrategy);
 }

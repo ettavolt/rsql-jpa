@@ -62,7 +62,7 @@ public class DefaultArgumentParser implements ArgumentParser {
 
         // Nullable object
         if (argument == null || "null".equals(argument.trim().toLowerCase())) {
-        	return (T) null;
+        	return null;
         }
 
         // common types
@@ -120,7 +120,7 @@ public class DefaultArgumentParser implements ArgumentParser {
 	 */
 	public <T> List<T> parse(List<String> arguments, Class<T> type)
 			throws ArgumentFormatException, IllegalArgumentException {
-    	List<T> castedArguments = new ArrayList<T>(arguments.size());
+    	List<T> castedArguments = new ArrayList<>(arguments.size());
     	for (String argument : arguments) {
     		castedArguments.add(this.parse(argument, type));
     	}

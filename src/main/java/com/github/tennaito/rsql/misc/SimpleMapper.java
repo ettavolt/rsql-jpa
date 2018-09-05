@@ -54,14 +54,14 @@ public class SimpleMapper implements Mapper {
      * @param initialCapacity initial capacity of entities map
      */
     public SimpleMapper(int initialCapacity) {
-        mapping = new HashMap<Class<?>, Map<String, String>>(initialCapacity);
+        mapping = new HashMap<>(initialCapacity);
     }
 
     public String translate(String selector, Class<?> entityClass) {
         if (mapping.isEmpty()) return selector;
 
         Map<String, String> map = mapping.get(entityClass);
-        String property = (map != null) ? map.get(selector) : null;
+        String property = (map == null) ? null : map.get(selector);
 
         if (property != null) {
         	LOG.log(Level.INFO, "Found mapping {0} -> {1}" , new Object[] {selector, property});
@@ -104,7 +104,7 @@ public class SimpleMapper implements Mapper {
     /**
      * Set the mapping of selectors to property names per entity class.
      *
-     * @param Mapping {entity class -> {selector -> property}}
+     * @param mapping {entity class -> {selector -> property}}
      */
     public void setMapping(Map<Class<?>, Map<String, String>> mapping) {
         this.mapping = mapping;

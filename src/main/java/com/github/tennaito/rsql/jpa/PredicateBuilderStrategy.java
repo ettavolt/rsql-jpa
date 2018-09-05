@@ -51,5 +51,5 @@ public interface PredicateBuilderStrategy {
      * @return 			 Predicate a predicate representation of the Node.
      * @throws IllegalArgumentException When illegal arguments are found.
      */
-    public <T> Predicate createPredicate(Node node, From root, Class<T> entity, EntityManager manager, BuilderTools tools) throws IllegalArgumentException;
+    <T> Predicate createPredicate(Node node, From root, Class<T> entity, EntityManager manager, BuilderTools tools) throws IllegalArgumentException;
 }

@@ -61,7 +61,7 @@ public class JpaCriteriaCountQueryVisitor<T> extends AbstractJpaVisitor<Criteria
     @SafeVarargs
     public JpaCriteriaCountQueryVisitor(T... t) {
         super(t);
-        this.predicateVisitor = new JpaPredicateVisitor<T>(t);
+        this.predicateVisitor = new JpaPredicateVisitor<>(t);
     }
 
     /**

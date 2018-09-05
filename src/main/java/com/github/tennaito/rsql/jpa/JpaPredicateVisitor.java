@@ -111,9 +111,8 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
 
     /**
      * Used for testing
-     * @return
      */
-    public PredicateBuilder getPredicateBuilder() {
+	PredicateBuilder getPredicateBuilder() {
         return predicateBuilder;
     }
 }

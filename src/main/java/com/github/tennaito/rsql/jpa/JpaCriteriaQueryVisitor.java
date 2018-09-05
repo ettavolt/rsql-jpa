@@ -57,7 +57,7 @@ public class JpaCriteriaQueryVisitor<T> extends AbstractJpaVisitor<CriteriaQuery
 	 */
 	public JpaCriteriaQueryVisitor(T... t) {
 		super(t);
-		this.predicateVisitor = new JpaPredicateVisitor<T>(t);
+		this.predicateVisitor = new JpaPredicateVisitor<>(t);
 	}
 
 	/**

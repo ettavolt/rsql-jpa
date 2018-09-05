@@ -65,12 +65,7 @@ public final class PredicateBuilder {
     /**
      * Map to cache already created joins
      */
-    private Map<String, Join<?, ?>> joinMap = new HashMap<String, Join<?, ?>>();
-
-    /**
-     * Used for testing
-     */
-    private int joinCount = 0;
+    private Map<String, Join<?, ?>> joinMap = new HashMap<>();
 
     static {
         //
@@ -122,7 +117,7 @@ public final class PredicateBuilder {
 
     	CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 
-    	List<Predicate> predicates = new ArrayList<Predicate>();
+    	List<Predicate> predicates = new ArrayList<>();
 
     	LOG.log(Level.INFO, "Creating Predicates from all children nodes.");
     	for (Node node : logical.getChildren()) {
@@ -130,8 +125,8 @@ public final class PredicateBuilder {
 		}
 
         switch (logical.getOperator()) {
-            case AND : return builder.and(predicates.toArray(new Predicate[predicates.size()]));
-            case OR : return builder.or(predicates.toArray(new Predicate[predicates.size()]));
+            case AND : return builder.and(predicates.toArray(new Predicate[0]));
+            case OR : return builder.or(predicates.toArray(new Predicate[0]));
         }
 
         throw new IllegalArgumentException("Unknown operator: " + logical.getOperator());
@@ -159,7 +154,7 @@ public final class PredicateBuilder {
         Expression propertyPath = findPropertyPath(comparison.getSelector(), startRoot, entityManager, misc);
 
 		LOG.log(Level.INFO, "Cast all arguments to type {0}.", propertyPath.getJavaType().getName());
-    	List<Object> castedArguments = misc.getArgumentParser().parse(comparison.getArguments(), propertyPath.getJavaType());
+    	List<?> castedArguments = misc.getArgumentParser().parse(comparison.getArguments(), propertyPath.getJavaType());
 
     	try {
     		// try to create a predicate
@@ -227,7 +222,6 @@ public final class PredicateBuilder {
                             LOG.log(Level.INFO, "Create a join between {0} and {1}.", new Object[]{previousClass, classMetadata.getJavaType().getName()});
                             root = ((From) root).join(mappedProperty, JoinType.LEFT);
                             joinMap.put(currentPath, (Join) root);
-                            joinCount++;
                         }
                     } else {
                         root = root.get(mappedProperty);
@@ -277,16 +271,17 @@ public final class PredicateBuilder {
      * @param manager       JPA EntityManager.
      * @return              Predicate a predicate representation.
      */
-    private Predicate createPredicate(Expression propertyPath, ComparisonOperator operator, List<Object> arguments, EntityManager manager) {
+    private Predicate createPredicate(Expression propertyPath, ComparisonOperator operator, List<?> arguments, EntityManager manager) {
     	LOG.log(Level.INFO, "Creating predicate: propertyPath {0} {1}", new Object[]{operator, arguments});
 
-    	if (ComparisonOperatorProxy.asEnum(operator) != null) {
-    		switch (ComparisonOperatorProxy.asEnum(operator)) {
+        final ComparisonOperatorProxy comparisonOperator = ComparisonOperatorProxy.asEnum(operator);
+        if (comparisonOperator != null) {
+    		switch (comparisonOperator) {
 	    		case EQUAL : {
 	    			Object argument = arguments.get(0);
-	    			if (argument instanceof String) {
+                    if (argument instanceof String) {
 	    				return createLike(propertyPath, (String) argument, manager);
-	    			} else if (isNullArgument(argument)) {
+	    			} else if (Objects.isNull(argument)) {
 	    				return createIsNull(propertyPath, manager);
 	    			} else {
 	    				return createEqual(propertyPath, argument, manager);
@@ -294,9 +289,9 @@ public final class PredicateBuilder {
 	    		}
 	    		case NOT_EQUAL : {
 	    			Object argument = arguments.get(0);
-	    			if (argument instanceof String) {
+                    if (argument instanceof String) {
 	    				return createNotLike(propertyPath, (String) argument, manager);
-	    			} else if (isNullArgument(argument)) {
+	    			} else if (Objects.isNull(argument)) {
 	    				return createIsNotNull(propertyPath, manager);
 	    			} else {
 	    				return createNotEqual(propertyPath, argument, manager);
@@ -637,7 +632,7 @@ public final class PredicateBuilder {
      * 						 if the property is a pluralAttribute it will take the bindable java type of that collection.
      */
     private <T> Class<?> findPropertyType(String property, ManagedType<T> classMetadata) {
-    	Class<?> propertyType = null;
+    	final Class<?> propertyType;
     	if (classMetadata.getAttribute(property).isCollection()) {
     		propertyType = ((PluralAttribute)classMetadata.getAttribute(property)).getBindableJavaType();
     	} else {
@@ -645,17 +640,6 @@ public final class PredicateBuilder {
     	}
         return propertyType;
     }
-
-    /**
-     * Verifies if the argument is null.
-     *
-     * @param argument
-     * @return <tt>true</tt> if argument is null, <tt>false</tt> otherwise
-     */
-    private boolean isNullArgument(Object argument) {
-        return argument == null;
-    }
-
 
     /**
       * Get date regarding the operation (less then or greater than)
@@ -688,9 +672,8 @@ public final class PredicateBuilder {
 
     /**
      * This is used to test join caching
-     * @return
      */
-    public int getJoinCount() {
-        return joinCount;
+    int getJoinCount() {
+        return joinMap.size();
     }
 }
