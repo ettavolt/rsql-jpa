@@ -64,11 +64,17 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.2.15.Final</version>
+            <version>5.4.3.Final</version>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<artifactId>jaxb-api</artifactId>
+			<groupId>javax.xml.bind</groupId>
+			<version>2.3.1</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
+		<dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <version>2.7.4</version>

@@ -23,46 +23,23 @@
  */
 package com.github.tennaito.rsql.jpa;
 
-
 import com.github.tennaito.rsql.builder.BuilderTools;
 import com.github.tennaito.rsql.jpa.entity.*;
 import com.github.tennaito.rsql.misc.SimpleMapper;
 import com.github.tennaito.rsql.parser.ast.ComparisonOperatorProxy;
-
+import cz.jirutka.rsql.parser.RSQLParser;
+import cz.jirutka.rsql.parser.ast.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.junit.Ignore;
-import com.github.tennaito.rsql.jpa.entity.Person;
-import cz.jirutka.rsql.parser.RSQLParser;
-import cz.jirutka.rsql.parser.ast.AbstractNode;
-import cz.jirutka.rsql.parser.ast.ComparisonNode;
-import cz.jirutka.rsql.parser.ast.ComparisonOperator;
-import cz.jirutka.rsql.parser.ast.LogicalNode;
-import cz.jirutka.rsql.parser.ast.LogicalOperator;
-import cz.jirutka.rsql.parser.ast.Node;
-import cz.jirutka.rsql.parser.ast.RSQLVisitor;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
+import static junit.framework.Assert.*;
 
 /**
  * @author AntonioRabelo
@@ -79,8 +56,6 @@ public class JpaVisitorTest {
 		initialize(hibernateEntityManager);
 		return Arrays.asList(new EntityManager[]{eclipseEntityManager}, new EntityManager[]{ hibernateEntityManager});
 	}
-
-	private final static XorNode xorNode = new XorNode(new ArrayList<>());
 
     private final EntityManager entityManager;
 
@@ -692,16 +667,6 @@ public class JpaVisitorTest {
     	assertNull(visitor.getBuilderTools().getPredicateBuilder());
     }
 
-    @Test
-    public void testUnsupportedLogicalNode() {
-    	try{
-    		new PredicateBuilder().createPredicate(JpaVisitorTest.xorNode, null, Course.class, entityManager, null);
-    		fail();
-    	} catch (IllegalArgumentException e) {
-    		assertEquals("Unknown operator: ^", e.getMessage());
-    	}
-    }
-
     @Ignore
     public void testPrivateConstructor() throws Exception {
     	Constructor<PredicateBuilder> priv = PredicateBuilder.class.getDeclaredConstructor();
@@ -715,66 +680,7 @@ public class JpaVisitorTest {
 
     ////////////////////////// Mocks //////////////////////////
 
-    static class OtherNode extends AbstractNode {
-
-		public <R, A> R accept(RSQLVisitor<R, A> visitor, A param) {
-			throw new UnsupportedOperationException();
-		}
-    }
-
-    static class XorNode extends LogicalNode {
-
-    	final static LogicalOperator XOR = createLogicalOperatorXor();
-
-	    XorNode(List<? extends Node> children) {
-	        super(XOR, children);
-	    }
-
-	    static void setStaticFinalField(Field field, Object value) throws NoSuchFieldException, IllegalAccessException {
-	    	// we mark the field to be public
-	    	field.setAccessible(true);
-	    	// next we change the modifier in the Field instance to
-	    	// not be final anymore, thus tricking reflection into
-	    	// letting us modify the static final field
-	    	Field modifiersField = Field.class.getDeclaredField("modifiers");
-	    	modifiersField.setAccessible(true);
-	    	int modifiers = modifiersField.getInt(field);
-	    	// blank out the final bit in the modifiers int
-	    	modifiers &= ~Modifier.FINAL;
-	    	modifiersField.setInt(field, modifiers);
-	    	sun.reflect.FieldAccessor fa = sun.reflect.ReflectionFactory.getReflectionFactory().newFieldAccessor(field, false);
-	    	fa.set(null, value);
-	    }
-
-		private static LogicalOperator createLogicalOperatorXor() {
-			LogicalOperator xor = null;
-			try {
-				Constructor<LogicalOperator> cstr = LogicalOperator.class.getDeclaredConstructor(String.class, int.class, String.class);
-				sun.reflect.ReflectionFactory factory = sun.reflect.ReflectionFactory.getReflectionFactory();
-				xor = (LogicalOperator) factory.newConstructorAccessor(cstr).newInstance(new Object[]{"XOR", 2, "^"});
-
-				Field ordinalField = Enum.class.getDeclaredField("ordinal");
-			    ordinalField.setAccessible(true);
-
-				LogicalOperator[] values = LogicalOperator.values();
-				Field valuesField = LogicalOperator.class.getDeclaredField("ENUM$VALUES");
-				valuesField.setAccessible(true);
-				LogicalOperator[] newValues = Arrays.copyOf(values, values.length + 1);
-				newValues[newValues.length - 1] = xor;
-				setStaticFinalField(valuesField, newValues);
-				int ordinal = newValues.length - 1;
-				ordinalField.set(xor, ordinal);
-			} catch (ReflectiveOperationException e) {
-				// do nothing
-				e.printStackTrace();
-			}
-			return xor;
-		}
-
-		@Override
-		public LogicalNode withChildren(List<? extends Node> children) {
-			return new XorNode(children);
-		}
+    protected static class OtherNode extends AbstractNode {
 
 		public <R, A> R accept(RSQLVisitor<R, A> visitor, A param) {
 			throw new UnsupportedOperationException();
@@ -821,7 +727,7 @@ public class JpaVisitorTest {
 		List<Department> departments = entityManager.createQuery(query).getResultList();
 		assertEquals("Testing", departments.get(0).getName());
 	}
-	
+
 	@Test
     public void testSelectionUsingJoinByAlias() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
