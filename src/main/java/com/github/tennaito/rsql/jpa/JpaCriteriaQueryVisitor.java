@@ -53,11 +53,11 @@ public class JpaCriteriaQueryVisitor<T> extends AbstractJpaVisitor<CriteriaQuery
 	/**
 	 * Construtor with template varargs for entityClass discovery.
 	 *
-	 * @param t not for usage
+	 * @param entityClass target entity
 	 */
-	public JpaCriteriaQueryVisitor(T... t) {
-		super(t);
-		this.predicateVisitor = new JpaPredicateVisitor<>(t);
+	public JpaCriteriaQueryVisitor(Class<T> entityClass) {
+		super(entityClass);
+		this.predicateVisitor = new JpaPredicateVisitor<>(entityClass);
 	}
 
 	/**

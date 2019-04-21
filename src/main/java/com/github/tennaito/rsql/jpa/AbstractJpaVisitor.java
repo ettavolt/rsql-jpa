@@ -42,15 +42,20 @@ import cz.jirutka.rsql.parser.ast.RSQLVisitor;
  */
 public abstract class AbstractJpaVisitor<T, E> implements RSQLVisitor<T, EntityManager> {
 
-	protected Class<E> entityClass;
+	protected final Class<E> entityClass;
 
 	protected BuilderTools builderTools;
+
+	public AbstractJpaVisitor(Class<E> entityClass) {
+		this.entityClass = entityClass;
+	}
 
 	/**
 	 * Construtor with template varargs for entityClass discovery.
 	 *
 	 * @param e not for usage
 	 */
+	@Deprecated
 	public AbstractJpaVisitor(E... e) {
 		// getting class from template... :P
 		if (e.length == 0) {
@@ -58,15 +63,6 @@ public abstract class AbstractJpaVisitor<T, E> implements RSQLVisitor<T, EntityM
 		} else {
 			entityClass = (Class<E>) e[0].getClass();
 		}		
-	}
-
-	/**
-	 * Set the entity class explicitly, needed when the entity type is itself a generic
-	 *
-	 * @param clazz Class to set.
-     */
-	public void setEntityClass(Class<E> clazz) {
-		entityClass = clazz;
 	}
 
 	/**

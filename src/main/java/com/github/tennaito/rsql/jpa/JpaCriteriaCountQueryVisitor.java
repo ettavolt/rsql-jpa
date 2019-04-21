@@ -53,15 +53,9 @@ public class JpaCriteriaCountQueryVisitor<T> extends AbstractJpaVisitor<Criteria
 
     private Root<T> root;
 
-    /**
-     * Construtor with template varargs for entityClass discovery.
-     *
-     * @param t not for usage
-     */
-    @SafeVarargs
-    public JpaCriteriaCountQueryVisitor(T... t) {
-        super(t);
-        this.predicateVisitor = new JpaPredicateVisitor<>(t);
+    public JpaCriteriaCountQueryVisitor(Class<T> entityClass) {
+        super(entityClass);
+        this.predicateVisitor = new JpaPredicateVisitor<>(entityClass);
     }
 
     /**

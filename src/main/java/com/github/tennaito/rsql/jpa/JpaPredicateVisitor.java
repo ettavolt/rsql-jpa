@@ -59,16 +59,12 @@ public class JpaPredicateVisitor<T> extends AbstractJpaVisitor<Predicate, T>  im
     /**
      * Instance of predicate builder
      */
-	private PredicateBuilder predicateBuilder;
+	private final PredicateBuilder predicateBuilder;
 
-	/**
-	 * Construtor with template varargs for entityClass discovery.
-	 *
-	 * @param t not for usage
-	 */
-	public JpaPredicateVisitor(T... t) {
-		super(t);
-        predicateBuilder = new PredicateBuilder();
+
+	public JpaPredicateVisitor(Class<T> entityClass) {
+		super(entityClass);
+		this.predicateBuilder = new PredicateBuilder();
 	}
 
 	/**
