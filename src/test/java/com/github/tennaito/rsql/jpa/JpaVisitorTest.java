@@ -48,6 +48,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.junit.Ignore;
+import com.github.tennaito.rsql.jpa.entity.Person;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.AbstractNode;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
@@ -146,7 +147,13 @@ public class JpaVisitorTest {
         c.setStartDate(new Date());
         entityManager.persist(c);
 
-        entityManager.getTransaction().commit();
+		PersonCourse personCourse  = new PersonCourse();
+		personCourse.setId(1L);
+		personCourse.setCode(c.getCode());
+		personCourse.setPersonId(head.getId());
+		entityManager.persist(personCourse);
+
+		entityManager.getTransaction().commit();
     }
 
     @Test
@@ -274,6 +281,26 @@ public class JpaVisitorTest {
 
 		List<Course> courses = entityManager.createQuery(query).getResultList();
 		assertEquals("Testing Course", courses.get(0).getName());
+	}
+
+	@Test
+	public void testEqualSelectionForStringInElementCollection() {
+		Node rootNode = new RSQLParser().parse("courses==MI-MDW");
+		RSQLVisitor<CriteriaQuery<Person>, EntityManager> visitor = new JpaCriteriaQueryVisitor<>();
+		CriteriaQuery<Person> query = rootNode.accept(visitor, entityManager);
+
+		List<Person> courses = entityManager.createQuery(query).getResultList();
+		assertEquals(1, courses.size());
+	}
+
+	@Test
+	public void testEqualSelectionForStringInElementCollectionFailed() {
+		Node rootNode = new RSQLParser().parse("courses=='DE-MDW'");
+		RSQLVisitor<CriteriaQuery<Person>, EntityManager> visitor = new JpaCriteriaQueryVisitor<>();
+		CriteriaQuery<Person> query = rootNode.accept(visitor, entityManager);
+
+		List<Person> courses = entityManager.createQuery(query).getResultList();
+		assertEquals(0, courses.size());
 	}
 
 	@Test

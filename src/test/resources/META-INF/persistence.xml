@@ -14,6 +14,7 @@
 		<class>com.github.tennaito.rsql.jpa.entity.Person</class>
 		<class>com.github.tennaito.rsql.jpa.entity.Title</class>
 		<class>com.github.tennaito.rsql.jpa.entity.Teacher</class>
+		<class>com.github.tennaito.rsql.jpa.entity.PersonCourse</class>
 		<class>com.github.tennaito.rsql.jpa.entity.Room</class>
 		<class>com.github.tennaito.rsql.jpa.entity.Building</class>
 		<properties>
@@ -31,7 +32,7 @@
 	</persistence-unit>
 
  	<persistence-unit name="persistenceUnit-hibernate">
- 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+ 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<class>com.github.tennaito.rsql.jpa.entity.Tag</class>
 		<class>com.github.tennaito.rsql.jpa.entity.ObjTags</class>
  		<class>com.github.tennaito.rsql.jpa.entity.Course</class>
