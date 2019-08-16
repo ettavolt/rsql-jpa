@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -87,6 +88,9 @@ public class DefaultArgumentParser implements ArgumentParser {
         // 1.8 date
 		if (type.equals(LocalDate.class)) {
 			return (T) LocalDate.parse(argument);
+        }
+        if (type.equals(LocalDateTime.class)) {
+			return (T) LocalDateTime.parse(argument);
 		}
 
         // try to parse via valueOf(String s) method
